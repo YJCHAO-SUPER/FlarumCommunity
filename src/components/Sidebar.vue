@@ -12,22 +12,7 @@
                 <li  class="selectHeader">所有话题</li>
                 <li  class="selectHeader">分类</li>
                 <br>
-                <li  class="select">求助</li>
-                <li  class="select">开发</li>
-                <li  class="select">UX</li>
-                <li  class="select">插件扩展</li>
-                <li  class="select">翻译</li>
-                <li  class="select">FAQ</li>
-                <li  class="select">需求</li>
-                <li  class="select">公共</li>
-                <li  class="select">反馈BUG</li>
-                <li  class="select">发展建议</li>
-                <li  class="select">灌水</li>
-                <li  class="select">其他</li>
-                <li  class="select">Flarum</li>
-                <li  class="select">异常</li>
-                <li  class="select">咨询</li>
-                <li  class="select">更多</li>
+                <li  class="select" v-for="item in categoryGroup">{{ item.name }}</li>
               </ul>
             </li>
         </ul>
@@ -35,8 +20,29 @@
 </template>
 
 <script>
-    export default {
-        name: "Sidebar"
+  import {getCategory} from "@/js/api";
+
+  export default {
+        name: "Sidebar",
+        data(){
+          return{
+            categoryGroup:[]
+          }
+        },
+        created:function (){
+          // console.log(123)
+        },
+        mounted:function () {
+
+          getCategory({}).then((res)=>{
+            // console.log(res.data)
+            for (let i=0;i<res.data.length;i++){
+              this.categoryGroup .push({
+                name : res.data[i].category_name
+              })
+            }
+          })
+        }
     }
 </script>
 

@@ -1,6 +1,7 @@
 <template>
     <div class="container">
-        <Header></Header>
+      <loginRegist v-if="loginBox" @login="showLogin"></loginRegist>
+        <Header @login="showLogin"></Header>
         <Main>
           <Aside>
             <Sidebar></Sidebar>
@@ -16,12 +17,24 @@
   import Header from '@/components/Header'
   import Sidebar from '@/components/Sidebar'
   import IndexArticle from '@/components/IndexArticle'
+  import LoginRegist from '@/components/LoginRegist'
     export default {
         name: "Index",
+        data(){
+          return {
+            loginBox: false
+          }
+        },
+        methods:{
+          showLogin(value){
+            this.loginBox  = value
+          }
+        },
         components: {
             Header,
             Sidebar,
-            IndexArticle
+            IndexArticle,
+            LoginRegist
        }
     }
 </script>

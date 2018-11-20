@@ -1,18 +1,18 @@
 <template>
     <div class="discussionList">
           <ul class="DiscussionList-discussions">
-              <li class="item">
+              <li class="item" v-for="indexItem in showIndex">
                 <div class="DiscussionListItem">
                   <div class="item-content">
-                    <img class="author" src="https://b-ssl.duitang.com/uploads/item/201810/26/20181026082910_ldqkn.thumb.300_300_c.jpg" alt="">
+                    <img class="author" :src="indexItem.avatar " alt="">
                     <a href="#" class="item-main">
-                      <h3 class="item-title">论坛激活功能</h3>
+                      <h3 class="item-title">{{ indexItem.title }}</h3>
                       <ul class="item-info">
                         <li class="item-tag">
-                          <span class="tags">求助</span>
+                          <span class="tags">{{ indexItem.categoryName }}</span>
                         </li>
                         <li class="item-time">
-                          <span class="username">123456回复于20小时前</span>
+                          <span class="username">{{ indexItem.name }}发布于20小时前</span>
                         </li>
                       </ul>
                     </a>
@@ -25,8 +25,30 @@
 </template>
 
 <script>
+  import {getArticleInfo} from '@/js/api'
     export default {
-        name: "IndexArticle"
+        name: "IndexArticle",
+        data(){
+          return{
+            showIndex:[]
+          }
+        },
+      created:function () {
+        console.log(123)
+      },
+      mounted:function () {
+        getArticleInfo({}).then((res)=>{
+          console.log(res.data)
+          for (let i=0;i<res.data.length;i++){
+            this.showIndex.push({
+                   avatar:res.data[i].get_user_by_article_id.avatar,
+                  title:res.data[i].title,
+                  categoryName:res.data[i].get_category_by_article_id.category_name,
+                  name: res.data[i].get_user_by_article_id.name,
+            })
+          }
+        })
+      }
     }
 </script>
 
@@ -59,13 +81,13 @@
     }
   .item-content{
     padding-left: 52px;
-    padding-right: 80px;
+    padding-right: 52px;
   }
   .author{
     width: 50px;
     border-radius: 50%;
     float: left;
-    margin-top: 13px;
+    margin-top: 20px;
   }
   .item-title{
     margin: 0 0 3px;
@@ -91,7 +113,7 @@
   }
   .item-tag{
     position: absolute;
-    right: 120px;
+    right: 170px;
     top: 23px;
     background-color: orange;
     border-radius: 5px;
@@ -103,7 +125,7 @@
   }
   .comments{
     position: absolute;
-    right: 25px;
+    right: 78px;
     top: 25px;
     color: #667c99;
     font-size: 14px;

@@ -3,12 +3,19 @@
       <header>
         <!--顶部导航-->
         <mu-appbar style="width: 100%;">
+          <div class="container">
           <a href="" class="title">Flarum 中文社区</a>
           <div class="controls">
             <ul class="header-con">
               <li><a href="" class="Button Button--link">首页</a></li>
               <li><a href="" class="Button Button--link">文档</a></li>
               <li><a href="" class="Button Button--link">下载</a></li>
+              <li v-if="$store.state.isLogin">
+                <input @click="logout" type="button" value="退出">
+              </li>
+              <li v-else>
+                <a @click="dologin" class="Button Button--link" >登录/注册</a>
+              </li>
             </ul>
           </div>
           <div class="header-right">
@@ -17,9 +24,6 @@
                 <div class="Search-input">
                   <input class="FormControl" placeholder="搜索其实很简单">
                 </div>
-              </li>
-              <li class="news">
-                简体中文
               </li>
               <li class="local">
                 <mu-button icon>
@@ -34,18 +38,49 @@
               </li>
             </ul>
           </div>
+          </div>
         </mu-appbar>
       </header>
     </div>
 </template>
 
 <script>
+  import LoginRegist from '@/components/LoginRegist'
     export default {
-        name: "Header"
+        name: "Header",
+        data(){
+            return{
+
+            }
+        },
+        created:function(){
+            if(localStorage.getItem('token')){
+              this.$store.commit('setLogin',true)
+            }
+        },
+        methods:{
+          logout(){
+             localStorage.removeItem('token')
+            this.$store.commit('setLogin',false)
+
+            console.log(   this.$store.state.isLogin )
+          },
+          dologin(){
+              //子组件给父组件传值
+              this.$emit('login',true)
+          }
+        },
+        components: {
+          LoginRegist
+        }
     }
 </script>
 
 <style scoped>
+  .container{
+    margin: 0 auto;
+    width: 80%;
+  }
   .title{
     cursor: pointer;
     color: #426799;
@@ -93,13 +128,12 @@
   }
   .FormControl {
     display: block;
-    width: 100%;
     height: 36px;
     padding: 8px 13px;
     font-size: 13px;
     line-height: 1.5;
     color: #667c99;
-    background-color: #fff;
+    background-color: #e8ecf3;
     border: 2px solid transparent;
     border-radius: 4px;
   }
@@ -109,8 +143,10 @@
   .Search-input input {
     float: left;
     width: 225px;
-    padding-left: 32px;
-    padding-right: 32px;
+    position: absolute;
+    top: 10px;
+    right: 530px;
+    height: 40px;
   }
   .Search-input{
     margin-right: 10px;

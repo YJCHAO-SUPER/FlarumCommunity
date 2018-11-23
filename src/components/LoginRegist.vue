@@ -3,9 +3,9 @@
     <div class="all"></div>
     <div class="wrapper">
       <input type="checkbox" name="flipper__checkbox" id="flipper__checkbox" class="flipper__checkbox" hidden />
-      <div class="form__container">
+      <div class="form__container" :class="{'round': statu==='login'}">
         <!-- Front side -->
-        <div class="form__login">
+        <div class="form__login" v-if="">
           <h1 class="form__header">Login</h1>
           <div id="loginForm" class="form">
             <div class="form__group">
@@ -23,7 +23,7 @@
             <div class="form__group">
               <input class="form__button" @click="login" type="button" value="Login" />
             </div>
-            <small>Not a member yet? <label for="flipper__checkbox" class="form__link">Create your account</label>.</small>
+            <small>Not a member yet? <label for="flipper__checkbox" class="form__link" @click="statu='register'">Create your account</label>.</small>
           </div>
         </div>
         <!-- Back side -->
@@ -45,7 +45,7 @@
             <div class="form__group">
               <input class="form__button" @click="regist" type="button" value="Sign up" />
             </div>
-            <small>Are you a member? <label for="flipper__checkbox" class="form__link">Click here to login</label>.</small>
+            <small>Are you a member? <label for="flipper__checkbox" class="form__link" @click="statu='login'">Click here to login</label></small>
           </div>
         </div>
       </div>
@@ -55,10 +55,14 @@
 </template>
 
 <script>
-    export default {
+  import {sendRegisterInfo} from "../js/api";
+  import {sendLoginInfo} from "../js/api";
+
+  export default {
         name: "LoginRegist",
       data(){
           return{
+            statu: 'login',
             Lemail:'',
             Lpassword:'',
             Rname:'',
@@ -68,21 +72,39 @@
       },
       methods:{
         login(){
-          if(this.Lemail = 'abc' && this.Lpassword == '123')
-          {
-            localStorage.setItem('token', '123')
-            this.$store.commit('setLogin', true)
-            this.$emit('login',false)
+          let para = {
+            Lemail  : this.Lemail,
+            Lpassword : this.Lpassword
           }
+          sendLoginInfo(para).then((res)=>{
+            if(res.data.code == 200){
+              localStorage.setItem('jwt_token',res.data.jwt)
+              this.$store.commit('setLogin', true)
+                this.$emit('login',false)
+            }else{
+              alert(res.data.error)
+            }
+          })
+
         },
         regist(){
-
+          let para  = {
+            name:this.Rname,
+            email:this.Remail,
+            password:this.Rpassword
+          }
+          sendRegisterInfo(para).then((res)=>{
+            this.statu = 'login'
+          })
         }
       }
     }
 </script>
 
 <style scoped>
+  .round {
+    -webkit-transform: rotateY(0deg) !important;
+  }
  .all{
     width: 100vw;
    height: 100vh;
@@ -212,16 +234,17 @@
     transform: rotateY(0deg);
   }
 
-  .form__signup {
-    padding: 2rem;
-    margin-left: -3.95rem;
-    -webkit-transform: rotateY(180deg);
-    transform: rotateY(180deg);
-  }
+ .form__signup {
+   padding: 2rem;
+   margin-left: -3.95rem;
+   -webkit-transform: rotateY(180deg);
+   transform: rotateY(180deg);
+ }
 
-  /**
-   * Form default styling
-   */
+
+ /**
+  * Form default styling
+  */
   .form__header {
     margin-bottom: 2rem;
     font-size: 1.618rem;

@@ -2,15 +2,16 @@
     <div class="sideNav">
         <ul>
             <li class="item-newDiscussion App-primaryControl">
-              <button class="Button Button--primary IndexPage-newDiscussion hasIcon" itemclassname="App-primaryControl" type="button" title="新的话题">
+              <button @click="addTopic" class="Button Button--primary IndexPage-newDiscussion hasIcon" itemclassname="App-primaryControl" type="button" title="新的话题">
                 <i class="icon fa fa-fw fa-edit Button-icon"></i>
-                <span class="Button-label">新的话题</span>
+                <span class="Button-label" >新的话题</span>
               </button>
             </li>
             <li class="item-nav">
               <ul>
-                <li  class="selectHeader">所有话题</li>
-                <li  class="selectHeader">分类</li>
+                <li  class="selectHeader">★&nbsp;&nbsp;所有话题</li>
+                <li  class="selectHeader">★&nbsp;&nbsp;关注</li>
+                <li  class="selectHeader">★&nbsp;&nbsp;分类</li>
                 <br>
                 <li  class="select" v-for="item in categoryGroup">{{ item.name }}</li>
               </ul>
@@ -30,10 +31,14 @@
           }
         },
         created:function (){
-          // console.log(123)
+
+        },
+        methods:{
+          addTopic(){
+            this.$emit('topicBox',true)
+          }
         },
         mounted:function () {
-
           getCategory({}).then((res)=>{
             // console.log(res.data)
             for (let i=0;i<res.data.length;i++){

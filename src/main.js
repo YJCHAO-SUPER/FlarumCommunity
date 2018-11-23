@@ -6,9 +6,12 @@ import router from './router'
 import store from  './store'
 import 'muse-ui/lib/styles/base.less';
 import 'muse-ui/lib/styles/theme.less';
+import '@/assets/fonts/fonts.css';
+import  ElementUI from 'element-ui'
 import { Button, Select, AppBar ,Badge, Icon} from 'muse-ui';
 
 
+Vue.use(ElementUI)
 Vue.use(Button);
 Vue.use(Select);
 Vue.use(AppBar);

@@ -1,10 +1,11 @@
 <template>
     <div class="container">
+      <Write :topic="topic" @topicBox="showTopicBox"></Write>
       <loginRegist v-if="loginBox" @login="showLogin"></loginRegist>
         <Header @login="showLogin"></Header>
         <Main>
           <Aside>
-            <Sidebar></Sidebar>
+            <Sidebar @topicBox="showTopicBox"></Sidebar>
           </Aside>
           <Article>
             <IndexArticle></IndexArticle>
@@ -18,23 +19,29 @@
   import Sidebar from '@/components/Sidebar'
   import IndexArticle from '@/components/IndexArticle'
   import LoginRegist from '@/components/LoginRegist'
+  import Write from '@/components/Write'
     export default {
         name: "Index",
         data(){
           return {
-            loginBox: false
+            loginBox: false,
+            topic:false
           }
         },
         methods:{
           showLogin(value){
             this.loginBox  = value
+          },
+          showTopicBox(value){
+            this.topic = value
           }
         },
         components: {
             Header,
             Sidebar,
             IndexArticle,
-            LoginRegist
+            LoginRegist,
+            Write
        }
     }
 </script>

@@ -6,6 +6,7 @@
 </template>
 
 <script>
+
 export default {
   name: 'App'
 }
@@ -14,5 +15,8 @@ export default {
 <style>
   body{
     background-color: #fff;
+  }
+  * {
+    font-family: "QingNingYouYuan",sans-serif;
   }
 </style>

@@ -54,13 +54,13 @@
             }
         },
         created:function(){
-            if(localStorage.getItem('token')){
+            if(localStorage.getItem('jwt_token')){
               this.$store.commit('setLogin',true)
             }
         },
         methods:{
           logout(){
-             localStorage.removeItem('token')
+             localStorage.removeItem('jwt_token')
             this.$store.commit('setLogin',false)
 
             console.log(   this.$store.state.isLogin )

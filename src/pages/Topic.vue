@@ -1,5 +1,6 @@
 <template>
     <div class="person">
+      <Write :topic="topic" @topicBox="replyTopicBox"></Write>
         <Header></Header>
         <Main class="perContent">
             <div class="theme">
@@ -28,8 +29,20 @@
                         </div>
                         <div class="disActions">
                           <ul>
-                            <li class="disActionsReply"><a href="" class="reply">回复</a></li>
-                            <li class="disActionsMore"><i class="el-icon-more"></i></li>
+                            <li class="disActionsReply"><a @click="replyTopicBox" class="reply">回复</a></li>
+                            <li class="disActionsMore">
+                            <el-popover
+                              placement="right"
+                              width="300"
+                              trigger="click">
+                              <el-table :data="gridData">
+                                <el-table-column width="150" property="date" label="日期"></el-table-column>
+                                <el-table-column width="100" property="name" label="姓名"></el-table-column>
+                              </el-table>
+                              <i class="el-icon-more"  slot="reference"></i>
+                            </el-popover>
+                            </li>
+
                           </ul>
                         </div>
                       </div>
@@ -37,12 +50,12 @@
                   <div class="disItems">
                     <div class="disSay">
                       <img class="disSayAvatar" src="http://discuss.flarum.org.cn/assets/avatars/krzlf5jgw0xc6s9u.jpg" alt="">
-                      <a href="#"><span class="disSayContent">说点什么. . .</span></a>
+                      <span class="disSayContent" @click="replyTopicBox">说点什么. . .</span>
                     </div>
                   </div>
               </div>
               <div class="disRight">
-                <button class="disRightReply"><span>回复</span></button>
+                <button class="disRightReply" @click="replyTopicBox"><span>回复</span></button>
                 <button class="disRightFollow"><span><i class="el-icon-star-off"></i>&nbsp;关注</span></button>
               </div>
             </div>
@@ -52,15 +65,22 @@
 
 <script>
   import Header from '@/components/Header'
+  import Write from '@/components/Write'
     export default {
         name: "Topic",
         data(){
           return{
-
+            topic:false
           }
         },
+      methods:{
+        replyTopicBox(value){
+          this.topic = value
+        }
+      },
         components:{
-          Header
+          Header,
+          Write
         }
     }
 </script>

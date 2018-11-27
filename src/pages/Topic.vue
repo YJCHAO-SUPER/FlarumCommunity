@@ -6,26 +6,26 @@
             <div class="theme">
               <div class="container">
                   <ul class="perItems">
-                    <li class="itemCategory"><a href="#">需求</a></li>
-                    <li class="itemTitle"><h2>请问会有博客版本吗？</h2></li>
+                    <li class="itemCategory"><a href="#">{{ categoryName }}</a></li>
+                    <li class="itemTitle"><h2>{{ title }}</h2></li>
                   </ul>
               </div>
             </div>
             <div class="container">
               <div class="discussion">
-                  <div class="disItems">
+                  <div class="disItems" v-for="(v,k) in discussionItem">
                       <div class="disContent">
-                        <a href=""><img src="http://discuss.flarum.org.cn/assets/avatars/gov0cznngyxomeo7.jpg" class="perAvatar" alt=""></a>
+                        <a href=""><img :src="v.avatar" class="perAvatar" alt=""></a>
                         <div class="disHeader">
                           <ul>
                             <li class="disUser">
-                              <a href="#"><span class="disUserName">JadeVane</span></a>
+                              <a href="#"><span class="disUserName">{{ v.author }}</span></a>
                             </li>
-                            <li class="disTime"><span class="disTimeItem">2018-11-22 20:29:30</span></li>
+                            <li class="disTime"><span class="disTimeItem">{{ v.created_at }}</span></li>
                           </ul>
                         </div>
                         <div class="disBody">
-                          <p>很喜欢这个界面，动态效果，还有这种响应方式，不过我是准备用来搭建博客，请问会出博客版本吗？</p>
+                          <p>{{ v.content }}</p>
                         </div>
                         <div class="disActions">
                           <ul>
@@ -33,16 +33,16 @@
                             <li class="disActionsMore">
                             <el-popover
                               placement="right"
-                              width="300"
+                              width="180"
                               trigger="click">
-                              <el-table :data="gridData">
-                                <el-table-column width="150" property="date" label="日期"></el-table-column>
-                                <el-table-column width="100" property="name" label="姓名"></el-table-column>
-                              </el-table>
+                              <el-row>
+                                <el-button type="primary" icon="el-icon-edit" circle></el-button>
+                                <el-button type="danger" icon="el-icon-delete" circle></el-button>
+                                <el-button type="info" icon="el-icon-message" circle></el-button>
+                              </el-row>
                               <i class="el-icon-more"  slot="reference"></i>
                             </el-popover>
                             </li>
-
                           </ul>
                         </div>
                       </div>
@@ -57,6 +57,33 @@
               <div class="disRight">
                 <button class="disRightReply" @click="replyTopicBox"><span>回复</span></button>
                 <button class="disRightFollow"><span><i class="el-icon-star-off"></i>&nbsp;关注</span></button>
+                <button class="disRightDown" trigger="click">
+                    <el-dropdown>
+                        <span class="el-dropdown-link">
+                          <i class="el-icon-caret-bottom"></i>
+                        </span>
+                        <el-dropdown-menu slot="dropdown">
+                          <el-dropdown-item class="clearfix">
+                            <span><i class="el-icon-check"></i></span>
+                            <i class="el-icon-star-off"></i>
+                            常规
+                            <span>仅在有人@提到我时提醒我</span>
+                          </el-dropdown-item>
+                          <el-dropdown-item class="clearfix">
+                            <span></span>
+                            <i class="el-icon-star-on"></i>
+                            关注
+                            <span>当有人回复此话题时提醒我</span>
+                          </el-dropdown-item>
+                          <el-dropdown-item class="clearfix">
+                            <span></span>
+                            <i class="el-icon-view"></i>
+                            忽视
+                            <span>不接收任何提醒并隐藏话题</span>
+                          </el-dropdown-item>
+                        </el-dropdown-menu>
+                    </el-dropdown>
+                </button>
               </div>
             </div>
         </Main>
@@ -66,13 +93,35 @@
 <script>
   import Header from '@/components/Header'
   import Write from '@/components/Write'
-    export default {
+  import {getTopicByIdInfo} from "../js/api";
+
+  export default {
         name: "Topic",
         data(){
           return{
-            topic:false
+            topic:false,
+            categoryName:'',
+            title:'',
+            discussionItem:[]
           }
         },
+      created:function(){
+        // alert(this.$route.params.id)
+        let para = {
+          id : this.$route.params.id
+        }
+        getTopicByIdInfo(para).then((res)=>{
+            console.log(res.data)
+          this.categoryName  = res.data.get_category_by_article_id.category_name
+          this.title   = res.data.title
+          this.discussionItem.push({
+            created_at: res.data.created_at,
+            content:res.data.content,
+            avatar:res.data.get_user_by_article_id.avatar,
+            author:res.data.get_user_by_article_id.name
+          })
+        })
+      },
       methods:{
         replyTopicBox(value){
           this.topic = value
@@ -138,6 +187,7 @@
   .discussion{
     margin-right: 225px;
     display: inline-block;
+    width: 70%;
   }
   .disItems{
     margin-top: 10px;
@@ -232,7 +282,7 @@
     background-color: #426799;
     color: #fff;
     border-radius: 4px;
-    width: 150px;
+    width: 160px;
     height: 36px;
     display: list-item;
     margin-bottom: 10px;
@@ -242,7 +292,15 @@
     background-color: #e8ecf3;
     color: #426799;
     border-radius: 4px;
-    width: 150px;
+    width: 110px;
+    height: 36px;
+  }
+  .disRightDown{
+    border: none;
+    background-color: #e8ecf3;
+    color: #426799;
+    border-radius: 4px;
+    width: 43px;
     height: 36px;
   }
 </style>

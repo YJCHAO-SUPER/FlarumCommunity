@@ -78,7 +78,7 @@
           }
           sendLoginInfo(para).then((res)=>{
             if(res.data.code == 200){
-              localStorage.setItem('jwt_token',res.data.jwt)
+              localStorage.setItem('jwt_token',res.data.ACCESS_TOKEN)
               this.$store.commit('setLogin', true)
                 this.$emit('login',false)
             }else{

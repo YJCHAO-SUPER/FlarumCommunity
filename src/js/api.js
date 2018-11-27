@@ -1,7 +1,7 @@
 import  axios from 'axios'
 
 axios.defaults.baseURL = 'http://localhost:9090'
-
+axios.defaults.headers.common.Authorization = localStorage.getItem('jwt_token')
 //获取分类
 export function getCategory(para) {
   return axios({
@@ -44,5 +44,23 @@ export function sendTopicInfo(para) {
     method:'post',
     url:'sendTopicInfo',
     data:para
+  })
+}
+
+//根据话题id 获取一篇话题信息
+export function getTopicByIdInfo(para) {
+  return axios({
+    method:'get',
+    url:'getTopicByIdInfo',
+    params:para
+  })
+}
+
+//根据用户id获取用户信息
+export function getUserInfoById(para) {
+  return axios({
+    method:'get',
+    url:'getUserInfoById',
+    params:para
   })
 }

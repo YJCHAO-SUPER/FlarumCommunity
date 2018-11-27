@@ -51,7 +51,6 @@
           this.$emit('topicBox',false)
         },
         submit(){
-          console.log(999)
           let para = {
               categoryId: this.category,
               title: this.title,
@@ -59,8 +58,8 @@
           }
           sendTopicInfo(para).then((res)=>{
               if(res.data.state == true){
-                // this.$router.push(res.data.topicId)
                 alert(res.data.msg)
+                this.$router.push("/topic/"+res.data.topicId)
               }else{
                 alert(res.data.msg)
               }

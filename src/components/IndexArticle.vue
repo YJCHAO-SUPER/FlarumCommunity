@@ -1,12 +1,13 @@
 <template>
     <div class="discussionList">
           <ul class="DiscussionList-discussions">
-              <li class="item" v-for="indexItem in showIndex">
+              <router-link :to="'/topic/'+indexItem.id" v-for="indexItem in showIndex" :key="indexItem.id">
+                <li class="item">
                 <div class="DiscussionListItem">
                   <div class="item-content">
-                    <img class="author" :src="indexItem.avatar " alt="">
+                    <router-link :to="'/user/'+indexItem.userId"><img class="author" :src="indexItem.avatar " alt=""></router-link>
                     <a href="#" class="item-main">
-                      <h3 class="item-title">{{ indexItem.title }}</h3>
+                      <router-link :to="'/topic/'+indexItem.id"><h3 class="item-title">{{ indexItem.title }}</h3></router-link>
                       <ul class="item-info">
                         <li class="item-tag">
                           <span class="tags">{{ indexItem.categoryName }}</span>
@@ -20,6 +21,7 @@
                   </div>
                 </div>
               </li>
+              </router-link>
           </ul>
     </div>
 </template>
@@ -41,7 +43,9 @@
           console.log(res.data)
           for (let i=0;i<res.data.length;i++){
             this.showIndex.push({
+                   id:res.data[i].id,
                    avatar:res.data[i].get_user_by_article_id.avatar,
+                   userId : res.data[i].get_user_by_article_id.id,
                   title:res.data[i].title,
                   categoryName:res.data[i].get_category_by_article_id.category_name,
                   name: res.data[i].get_user_by_article_id.name,

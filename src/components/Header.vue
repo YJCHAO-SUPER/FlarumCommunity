@@ -1,15 +1,16 @@
 <template>
     <div>
       <header>
+        <loginRegist :loginBox="loginBox"  @showDologin="dologin"></loginRegist>
         <!--顶部导航-->
         <mu-appbar style="width: 100%;">
           <div class="container">
-          <a href="" class="title">Flarum 中文社区</a>
+          <router-link :to="'/'"><a class="title">Flarum 中文社区</a></router-link>
           <div class="controls">
             <ul class="header-con">
-              <li><a href="" class="Button Button--link">首页</a></li>
-              <li><a href="" class="Button Button--link">文档</a></li>
-              <li><a href="" class="Button Button--link">下载</a></li>
+              <li><div class="Button Button--link">首页</div></li>
+              <li><div class="Button Button--link">文档</div></li>
+              <li><div class="Button Button--link">下载</div></li>
               <li v-if="$store.state.isLogin">
                 <input @click="logout" type="button" value="退出">
               </li>
@@ -32,42 +33,61 @@
               </li>
               <li class="selfinfo">
                 <div class="my">
-                  <img class="avatar " src="http://discuss.flarum.org.cn/assets/avatars/fwqa1topglnq0swx.jpg">
-                  <span class="username">pitaotao</span>
+                  <img class="avatar " :src="avatar">
+                  <span class="username">{{name}}</span>
                 </div>
               </li>
             </ul>
           </div>
           </div>
         </mu-appbar>
+
       </header>
     </div>
 </template>
 
 <script>
   import LoginRegist from '@/components/LoginRegist'
-    export default {
+  import {mapState,mapMutations} from 'vuex'
+  import {doCheckLogin} from "../js/api";
+
+  export default {
         name: "Header",
         data(){
-            return{
-
+            return {
+              name: '',
+              avatar: '',
+              loginBox:false
             }
         },
-        created:function(){
+        computed:{
+          ...mapState(['user'])
+        },
+        mounted:function(){
             if(localStorage.getItem('jwt_token')){
               this.$store.commit('setLogin',true)
             }
+            let para = {
+              jwtToken : localStorage.getItem('jwt_token')
+            }
+            doCheckLogin(para).then((res)=>{
+              this.avatar = 'http://localhost:9090'+this.user.avatar
+              this.name = this.user.name
+              this.SET_USER({'id':res.data.id,'avatar':'http://localhost:9090' + res.data.avatar,'name':res.data.name})
+            })
+
         },
         methods:{
+          ...mapMutations(['SET_USER']),
           logout(){
              localStorage.removeItem('jwt_token')
             this.$store.commit('setLogin',false)
 
             console.log(   this.$store.state.isLogin )
           },
-          dologin(){
+          dologin(value){
               //子组件给父组件传值
-              this.$emit('login',true)
+              this.loginBox = value
           }
         },
         components: {

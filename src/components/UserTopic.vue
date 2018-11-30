@@ -4,7 +4,7 @@
         <li class="item"  v-for="(topicItem, index) in topics.get_topic_by_user_id" :key="index">
           <div class="DiscussionListItem">
             <div class="item-content">
-              <img class="author" :src="topics.avatar " alt="">
+              <img class="author" :src="'http://localhost:9090' + topics.avatar " alt="">
               <a href="#" class="item-main">
                 <h3 class="item-title">{{ topicItem.title }}</h3>
                 <ul class="item-info">
@@ -25,15 +25,20 @@
 </template>
 
 <script>
+  import {mapState,mapMutations} from 'vuex'
     export default {
         name: "UserTopic",
         props:['topics'],
         data(){
             return{
-
+              topicAvatar:''
             }
         },
+        computed:{
+          ...mapState(['user'])
+        },
         mounted: function () {
+          this.topicAvatar = this.user.avatar
           // console.log( this.topics.get_topic_by_user_id[0])
         }
     }
@@ -75,6 +80,7 @@
     border-radius: 50%;
     float: left;
     margin-top: 20px;
+    height: 50px;
   }
   .item-title{
     margin: 0 0 3px;

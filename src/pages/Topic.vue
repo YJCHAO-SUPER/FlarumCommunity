@@ -1,7 +1,6 @@
 <template>
     <div class="person">
       <Write :topic="topic" @topicBox="replyTopicBox"></Write>
-        <Header></Header>
         <Main class="perContent">
             <div class="theme">
               <div class="container">
@@ -15,7 +14,7 @@
               <div class="discussion">
                   <div class="disItems" v-for="(v,k) in discussionItem">
                       <div class="disContent">
-                        <a href=""><img :src="v.avatar" class="perAvatar" alt=""></a>
+                        <router-link :to="'/user/'+userId"><img :src="v.avatar" class="perAvatar" alt=""></router-link>
                         <div class="disHeader">
                           <ul>
                             <li class="disUser">
@@ -49,7 +48,7 @@
                   </div>
                   <div class="disItems">
                     <div class="disSay">
-                      <img class="disSayAvatar" src="http://discuss.flarum.org.cn/assets/avatars/krzlf5jgw0xc6s9u.jpg" alt="">
+                      <img class="disSayAvatar" :src="myselfAvatar" alt="">
                       <span class="disSayContent" @click="replyTopicBox">说点什么. . .</span>
                     </div>
                   </div>
@@ -91,9 +90,9 @@
 </template>
 
 <script>
-  import Header from '@/components/Header'
   import Write from '@/components/Write'
   import {getTopicByIdInfo} from "../js/api";
+  import {mapState,mapMutations} from 'vuex'
 
   export default {
         name: "Topic",
@@ -102,10 +101,16 @@
             topic:false,
             categoryName:'',
             title:'',
-            discussionItem:[]
+            discussionItem:[],
+            myselfAvatar:'',
+            userId:''
           }
         },
+        computed:{
+          ...mapState(['user'])
+        },
       created:function(){
+          this.myselfAvatar = this.user.avatar
         // alert(this.$route.params.id)
         let para = {
           id : this.$route.params.id
@@ -114,10 +119,11 @@
             console.log(res.data)
           this.categoryName  = res.data.get_category_by_article_id.category_name
           this.title   = res.data.title
+          this.userId = res.data.user_id
           this.discussionItem.push({
             created_at: res.data.created_at,
             content:res.data.content,
-            avatar:res.data.get_user_by_article_id.avatar,
+            avatar: 'http://localhost:9090' + res.data.get_user_by_article_id.avatar,
             author:res.data.get_user_by_article_id.name
           })
         })
@@ -128,7 +134,6 @@
         }
       },
         components:{
-          Header,
           Write
         }
     }

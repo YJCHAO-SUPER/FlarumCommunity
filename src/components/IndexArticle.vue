@@ -6,7 +6,7 @@
                 <div class="DiscussionListItem">
                   <div class="item-content">
                     <router-link :to="'/user/'+indexItem.userId"><img class="author" :src="indexItem.avatar " alt=""></router-link>
-                    <a href="#" class="item-main">
+                    <div class="item-main">
                       <router-link :to="'/topic/'+indexItem.id"><h3 class="item-title">{{ indexItem.title }}</h3></router-link>
                       <ul class="item-info">
                         <li class="item-tag">
@@ -16,7 +16,7 @@
                           <span class="username">{{ indexItem.name }}发布于20小时前</span>
                         </li>
                       </ul>
-                    </a>
+                    </div>
                     <span class="comments">评论：666条</span>
                   </div>
                 </div>
@@ -44,7 +44,7 @@
           for (let i=0;i<res.data.length;i++){
             this.showIndex.push({
                    id:res.data[i].id,
-                   avatar:res.data[i].get_user_by_article_id.avatar,
+                   avatar:'http://localhost:9090' + res.data[i].get_user_by_article_id.avatar,
                    userId : res.data[i].get_user_by_article_id.id,
                   title:res.data[i].title,
                   categoryName:res.data[i].get_category_by_article_id.category_name,
@@ -92,6 +92,7 @@
     border-radius: 50%;
     float: left;
     margin-top: 20px;
+    height: 50px;
   }
   .item-title{
     margin: 0 0 3px;

@@ -1,6 +1,7 @@
 import  axios from 'axios'
 
-axios.defaults.baseURL = 'http://localhost:9090'
+let api_url  = 'http://localhost:9090'
+axios.defaults.baseURL = api_url
 axios.defaults.headers.common.Authorization = localStorage.getItem('jwt_token')
 //获取分类
 export function getCategory(para) {
@@ -62,5 +63,41 @@ export function getUserInfoById(para) {
     method:'get',
     url:'getUserInfoById',
     params:para
+  })
+}
+
+//发送修改密码的信息
+export function sendChangePassword(para) {
+  return axios({
+    method : 'post',
+    url : '/sendChangePassword',
+    data : para
+  })
+}
+
+//发送修改邮箱的信息
+export function sendChangeEmail(para) {
+  return axios({
+    method : 'post',
+    url : '/sendChangeEmail',
+    data : para
+  })
+}
+
+//上传头像
+export function uploadAvatar (para) {
+  return axios({
+    method : 'post',
+    url : '/uploadAvatar',
+    data : para
+  })
+}
+
+//检查用户信息
+export  function doCheckLogin(para) {
+  return axios({
+    method:'post',
+    url:'/doCheckLogin',
+    data:para
   })
 }

@@ -1,5 +1,5 @@
 <template>
-  <div style="height: 100vh;width: 100vw;position: fixed;z-index: 9">
+  <div style="height: 100vh;width: 100vw;position: fixed;z-index: 9"  :style="{'display': loginBox?'block':'none'}">
     <div class="all"></div>
     <div class="wrapper">
       <input type="checkbox" name="flipper__checkbox" id="flipper__checkbox" class="flipper__checkbox" hidden />
@@ -18,7 +18,7 @@
             </div>
             <div class="form__group">
               <label for="checkbox"><input id="checkbox" name="checkbox" class="checkbox--forget" type="checkbox" /><span class="icon--checkbox fa fa-check"></span> Remember me</label>
-              <a class="form__link link--right" href="#">Forgot your password?</a>
+              <a class="form__link link--right">Forgot your password?</a>
             </div>
             <div class="form__group">
               <input class="form__button" @click="login" type="button" value="Login" />
@@ -57,9 +57,11 @@
 <script>
   import {sendRegisterInfo} from "../js/api";
   import {sendLoginInfo} from "../js/api";
+  import {mapState,mapMutations} from 'vuex'
 
   export default {
         name: "LoginRegist",
+        props:['loginBox'],
       data(){
           return{
             statu: 'login',
@@ -70,8 +72,13 @@
             Rpassword:''
           }
       },
+      computed:{
+        ...mapState(['user'])
+      },
       methods:{
+        ...mapMutations(['SET_USER']),
         login(){
+          this.$emit('showDologin',false)
           let para = {
             Lemail  : this.Lemail,
             Lpassword : this.Lpassword
@@ -80,7 +87,8 @@
             if(res.data.code == 200){
               localStorage.setItem('jwt_token',res.data.ACCESS_TOKEN)
               this.$store.commit('setLogin', true)
-                this.$emit('login',false)
+              this.$emit('login',false)
+              this.SET_USER({'id' : res.data.id,'avatar' : 'http://localhost:9090' + res.data.avatar,'name' : res.data.name})
             }else{
               alert(res.data.error)
             }

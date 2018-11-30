@@ -3,16 +3,26 @@ import Vuex from 'vuex'
 
 Vue.use(Vuex)
 
-export default new Vuex.Store({
+const store = () => new Vuex.Store({
   state: {
-    isLogin:false
+    isLogin:false,
+    user: {}
   },
   mutations: {
     setLogin(state,value){
       state.isLogin = value
+    },
+    SET_USER(state,{id=null,avatar,name=null}){
+      if (id != null){
+        state.user.id = id
+      }
+      if(name != null){
+        state.user.name = name
+      }
+      if(avatar !=null){
+        state.user.avatar = avatar
+      }
     }
-  },
-  actions: {
-
   }
 })
+export  default  store

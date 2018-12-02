@@ -44,7 +44,7 @@
   Main {
     width: 85%;
     margin: 0 auto;
-    margin-top: 10px;
+    margin-top: 50px;
     overflow: hidden;
     padding: 2.5% 2.5%;
   }

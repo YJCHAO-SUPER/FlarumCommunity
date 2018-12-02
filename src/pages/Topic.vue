@@ -141,6 +141,7 @@
 
 <style scoped>
   .person{
+    margin-top: 50px;
     position: relative !important;
     /*padding-top: 52px;*/
     padding-bottom: 50px;

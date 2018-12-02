@@ -48,34 +48,57 @@
         <div class="container">
           <div class="Tips">
             <ul class="userNav">
-              <router-link :to="'/user/' + id  + '/userReply'" class="label">
-                <li class="userReply" @click="index=1">
-                    <i class="el-icon-star-on"></i>
-                    <span>回复</span>
-                </li>
-              </router-link>
-              <router-link :to="'/user/' + id  + '/userTopic'" class="label">
-                <li class="userTopic" @click="index=2">
-                    <i class="el-icon-star-off"></i>
-                    <span>话题</span>
-                </li>
-              </router-link>
-              <router-link :to="'/user/' + id  +'/userMention'" class="label">
-                <li class="MentionUsers" @click="index=3">
-                    <i>@&nbsp;</i>
-                    <span>提到用户</span>
-                </li>
-              </router-link>
-              <router-link :to="'/user/' + id  + '/userSetting'" class="label">
-                <li class="userSet" @click="index=4" v-if="user.id == $route.params.id">
-                    <i class="el-icon-setting"></i>
-                    <span>个人设置</span>
-                </li>
-              </router-link>
+              <li class="userReply" @click="index=1">
+                <a >
+                  <i class="el-icon-star-on"></i>
+                  <span>回复</span>
+                </a>
+              </li>
+              <li class="userTopic" @click="index=2">
+                <a >
+                  <i class="el-icon-star-off"></i>
+                  <span>话题</span>
+                </a>
+              </li>
+              <li class="MentionUsers" @click="index=3">
+                <a >
+                  <i>@&nbsp;</i>
+                  <span>提到用户</span>
+                </a>
+              </li>
+              <li class="userSet" @click="index=4" v-if="user.id == $route.params.id">
+                <a >
+                  <i class="el-icon-setting"></i>
+                  <span>个人设置</span>
+                </a>
+              </li>
             </ul>
           </div>
           <div class="userAllTopic">
-            <router-view  :topics = "topics" ></router-view>
+            <div class="disItems" v-for="(v,k) in userDiscussion" :key="k"  v-if="index == 1">
+              <span class="userTitle">{{ v.title }}</span>
+              <div class="disContent">0
+                <img :src="avatar" class="perAvatar" alt="">
+                <div class="disHeader">
+                  <ul>
+                    <li class="disUser">
+                      <span class="disUserName">{{ username }}</span>
+                    </li>
+                    <li class="disTime"><span class="disTimeItem">{{ v.created_at }}</span></li>
+                  </ul>
+                </div>
+                <div class="disBody">
+                  <p>{{ v.content }}</p>
+                </div>
+                <div class="disActions">
+                  <ul>
+                    <li class="disActionsReply"><a class="reply">回复</a></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <UserTopic  :topics = "topics" v-if="index==2 "></UserTopic>
+            <UserSetting v-if="index==4"></UserSetting>
           </div>
         </div>
       </Main>
@@ -83,9 +106,9 @@
 </template>
 
 <script>
+
   import UserSetting from '@/components/UserSetting'
   import UserTopic from '@/components/UserTopic'
-  import UserMention from '@/components/UserMention'
   import {getUserInfoById,uploadAvatar} from "../js/api"
   //引入vuex
   import {mapState,mapMutations} from 'vuex'
@@ -103,9 +126,8 @@
               signature:'',
               time:'',
               userDiscussion:[],
-              topics:[],
-              fileList: [],
-              id:''
+             topics:[],
+              fileList: []
           }
       },
       methods: {
@@ -130,7 +152,6 @@
             }
             getUserInfoById(para).then((res)=>{
               // console.log(res.data)
-              this.id = res.data.id
               this.avatar = 'http://localhost:9090' + res.data.avatar
               this.username = res.data.name
               //把头像和名字传给store
@@ -152,16 +173,12 @@
       },
       components:{
         UserSetting,
-        UserTopic,
-        UserMention
+        UserTopic
       }
     }
 </script>
 
 <style scoped>
-  .label{
-    color: #667c99;
-  }
 .userContent{
   border-top: 1px solid #e8ecf3;
   margin-top: 50px;

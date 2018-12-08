@@ -38,7 +38,7 @@
                 placement="bottom"
                 width="200"
                 trigger="click">
-                  <router-link :to="'/user/' + id  + '/userReply'"><div class="userSet"><i class="el-icon-menu"></i><span>我的资料</span></div></router-link>
+                  <router-link :to="'/user/' + id "><div class="userSet"><i class="el-icon-menu"></i><span>我的资料</span></div></router-link>
                   <router-link :to="'/user/' + id  + '/userSetting'"><div class="userSet"><i class="el-icon-setting"></i><span>个人设置</span></div></router-link>
                   <hr>
                   <div class="userSet" @click="logout" ><i class="el-icon-caret-right"></i><span>退出</span></div>

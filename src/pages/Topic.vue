@@ -1,6 +1,5 @@
 <template>
     <div class="person">
-      <Write :topic="topic" @topicBox="replyTopicBox"></Write>
         <Main class="perContent">
             <div class="theme">
               <div class="container">
@@ -28,7 +27,7 @@
                         </div>
                         <div class="disActions">
                           <ul>
-                            <li class="disActionsReply"><a @click="replyTopicBox" class="reply">回复</a></li>
+                            <li class="disActionsReply" @click="AuthorReply(v.author)"><div class="reply">回复</div></li>
                             <li class="disActionsMore">
                             <el-popover
                               placement="right"
@@ -46,15 +45,51 @@
                         </div>
                       </div>
                   </div>
-                  <div class="disItems">
+
+                  <div class="replyItems" v-for="(item,index) in replyItem" :key="index">
+                  <div class="disContent">
+                    <router-link :to="'/user/'+replyUserId"><img :src="item.avatar" class="perAvatar" alt=""></router-link>
+                    <div class="disHeader">
+                      <ul>
+                        <li class="disUser">
+                          <a><span class="disUserName">{{ item.name}}</span></a>
+                        </li>
+                        <li class="disTime"><span class="disTimeItem">{{ item.created_at }}</span></li>
+                      </ul>
+                    </div>
+                    <div class="disBody">
+                      <p>{{ item.reply_content }}</p>
+                    </div>
+                    <div class="disActions">
+                      <ul>
+                        <li class="disActionsReply" @click="AuthorReply(item.name)"><div class="reply">回复</div></li>
+                        <li class="disActionsMore">
+                          <el-popover
+                            placement="right"
+                            width="180"
+                            trigger="click">
+                            <el-row>
+                              <el-button type="primary" icon="el-icon-edit" circle></el-button>
+                              <el-button type="danger" icon="el-icon-delete" circle></el-button>
+                              <el-button type="info" icon="el-icon-message" circle></el-button>
+                            </el-row>
+                            <i class="el-icon-more"  slot="reference"></i>
+                          </el-popover>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="disItems">
                     <div class="disSay">
                       <img class="disSayAvatar" :src="myselfAvatar" alt="">
-                      <span class="disSayContent" @click="replyTopicBox">说点什么. . .</span>
+                      <span class="disSayContent"  @click="dialogFormVisible = true">说点什么. . .</span>
                     </div>
                   </div>
               </div>
               <div class="disRight">
-                <button class="disRightReply" @click="replyTopicBox"><span>回复</span></button>
+                <button class="disRightReply" @click="dialogFormVisible = true"><span>回复</span></button>
                 <button class="disRightFollow"><span><i class="el-icon-star-off"></i>&nbsp;关注</span></button>
                 <button class="disRightDown" trigger="click">
                     <el-dropdown>
@@ -85,13 +120,29 @@
                 </button>
               </div>
             </div>
+
+          <!--回复框-->
+          <el-dialog title="回复" :visible.sync="dialogFormVisible">
+            <el-form>
+              <p class="formTitle">{{ title }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;回复给：
+                  <span class="formname" v-model="sendReplyId">{{ sendrelyname }}</span>
+              </p>
+              <img class="formimg" :src="myselfAvatar" alt="">
+              <el-form-item :label-width="formLabelWidth">
+                <el-input type="textarea" v-model="desc"></el-input>
+              </el-form-item>
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+              <el-button @click="dialogFormVisible = false">取 消</el-button>
+              <el-button type="primary" @click="sendReply">发表回复</el-button>
+            </div>
+          </el-dialog>
         </Main>
     </div>
 </template>
 
 <script>
-  import Write from '@/components/Write'
-  import {getTopicByIdInfo} from "../js/api";
+  import {getTopicByIdInfo,getReplyByTopicId} from "../js/api";
   import {mapState,mapMutations} from 'vuex'
 
   export default {
@@ -103,7 +154,15 @@
             title:'',
             discussionItem:[],
             myselfAvatar:'',
-            userId:''
+            userId:'',
+            dialogFormVisible: false,
+            desc: '',
+            formLabelWidth: '120px',
+            replyItem:[],
+            replyUserId:'',
+            sendrelyname:'',
+            articleId:'',
+            sendReplyId:''
           }
         },
         computed:{
@@ -117,6 +176,7 @@
         }
         getTopicByIdInfo(para).then((res)=>{
             console.log(res.data)
+          this.articleId = res.data.id
           this.categoryName  = res.data.get_category_by_article_id.category_name
           this.title   = res.data.title
           this.userId = res.data.user_id
@@ -127,15 +187,33 @@
             author:res.data.get_user_by_article_id.name
           })
         })
+        getReplyByTopicId(para).then((res)=>{
+          // console.log(res.data)
+          for(let i=0;i<res.data.length;i++){
+            this.replyUserId = res.data[i].get_user_by_reply_user_id.id
+            this.replyItem.push({
+              created_at:res.data[i].created_at,
+              reply_content:res.data[i].reply_content,
+              name:res.data[i].get_user_by_reply_user_id.name,
+              avatar:'http://localhost:9090' + res.data[i].get_user_by_reply_user_id.avatar
+            })
+          }
+        })
       },
       methods:{
-        replyTopicBox(value){
-          this.topic = value
+        AuthorReply(author) {
+          this.dialogFormVisible = true
+          this.sendrelyname = author
+        },
+        sendReply(){
+          let para = {
+
+          }
+          addReply(para).then((res)=>{
+
+          })
         }
-      },
-        components:{
-          Write
-        }
+      }
     }
 </script>
 
@@ -145,7 +223,7 @@
     position: relative !important;
     /*padding-top: 52px;*/
     padding-bottom: 50px;
-    overflow-x: hidden;
+    overflow-y: hidden;
     min-height: 100vh;
   }
   .perContent{
@@ -197,6 +275,9 @@
   }
   .disItems{
     margin-top: 10px;
+  }
+  .replyItems{
+    margin-top: 30px;
   }
   .disContent{
     border-bottom: 1px solid #e8ecf3;
@@ -254,6 +335,7 @@
   }
   .reply{
     color: #426799;
+    cursor: pointer;
   }
   .disSay{
     margin-top: 50px;
@@ -275,6 +357,7 @@
     color: #426799;
     padding-left: 20px;
     line-height: 104px;
+    cursor: pointer;
   }
   .disRight{
     position: relative;
@@ -308,5 +391,19 @@
     border-radius: 4px;
     width: 43px;
     height: 36px;
+  }
+  .formimg{
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    float: left;
+  }
+  .formTitle{
+    font-size: 14px;
+    display: inline-grid;
+    padding-left: 20px;
+  }
+  .formname{
+    display: contents;
   }
 </style>

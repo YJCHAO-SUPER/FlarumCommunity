@@ -2,7 +2,7 @@
     <div>
       <div class="disItems" v-for="(v,k) in userDiscussion" :key="k"  v-if="index == 1">
         <span class="userTitle">{{ v.title }}</span>
-        <div class="disContent">0
+        <div class="disContent">
           <img :src="avatar" class="perAvatar" alt="">
           <div class="disHeader">
             <ul>
@@ -17,7 +17,7 @@
           </div>
           <div class="disActions">
             <ul>
-              <li class="disActionsReply"><a class="reply">回复</a></li>
+              <li class="disActionsReply" @click="showTopic"><a class="reply">回复</a></li>
             </ul>
           </div>
         </div>
@@ -27,6 +27,7 @@
 
 <script>
   import {getUserInfoById,uploadAvatar} from "../js/api"
+
     export default {
         name: "userReply",
       data(){
@@ -50,6 +51,9 @@
           uploadAvatar(formData).then((res) => {
 
           })
+        },
+        showTopic(){
+          this.$emit('topicBox',true)
         }
       },
       created:function(){

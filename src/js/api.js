@@ -101,3 +101,12 @@ export  function doCheckLogin(para) {
     data:para
   })
 }
+
+//根据话题id获取所有回复
+export  function getReplyByTopicId(para) {
+  return axios({
+    method:'get',
+    url:'/getReplyByTopicId',
+    params:para
+  })
+}

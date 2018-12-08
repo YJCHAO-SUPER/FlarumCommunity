@@ -1,6 +1,6 @@
 <template>
     <div>
-
+      <Write :topic="topic" @topicBox="showTopicBox"></Write>
       <Main class="userContent">
         <div class="introduce">
           <div class="container">
@@ -47,8 +47,8 @@
         </div>
         <div class="container">
           <div class="Tips">
-            <ul class="userNav">
-              <router-link :to="'/user/' + id  + '/userReply'" class="label">
+            <ul class="userNav" >
+              <router-link :to="'/user/' + id " class="label">
                 <li class="userReply" @click="index=1">
                     <i class="el-icon-star-on"></i>
                     <span>回复</span>
@@ -75,7 +75,7 @@
             </ul>
           </div>
           <div class="userAllTopic">
-            <router-view  :topics = "topics" ></router-view>
+            <router-view  :topics = "topics"  @topicBox="showTopicBox"></router-view>
           </div>
         </div>
       </Main>
@@ -86,7 +86,9 @@
   import UserSetting from '@/components/UserSetting'
   import UserTopic from '@/components/UserTopic'
   import UserMention from '@/components/UserMention'
+  import UserReply from '@/components/UserReply'
   import {getUserInfoById,uploadAvatar} from "../js/api"
+  import Write from '@/components/Write'
   //引入vuex
   import {mapState,mapMutations} from 'vuex'
   export default {
@@ -105,7 +107,8 @@
               userDiscussion:[],
               topics:[],
               fileList: [],
-              id:''
+              id:'',
+             topic:false
           }
       },
       methods: {
@@ -120,6 +123,9 @@
             // this.avatar = 'http://localhost:9090' + res.data
           this.SET_USER({'id':null,'avatar':'http://localhost:9090' + res.data,'name':null})
           })
+        },
+        showTopicBox(value){
+          this.topic = value
         }
       },
       created:function(){
@@ -153,7 +159,9 @@
       components:{
         UserSetting,
         UserTopic,
-        UserMention
+        UserMention,
+        Write,
+        UserReply
       }
     }
 </script>
@@ -242,7 +250,6 @@
     font-size: 16px;
   }
   .userAllTopic{
-    margin-top: 30px;
     margin-left: 240px;
   }
   .disItems{

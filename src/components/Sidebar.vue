@@ -14,6 +14,7 @@
                 <li  class="selectHeader">★&nbsp;&nbsp;分类</li>
                 <br>
                 <li  class="select" v-for="item in categoryGroup">{{ item.name }}</li>
+                <li  class="selectHeader">更多. . .</li>
               </ul>
             </li>
         </ul>

@@ -27,7 +27,7 @@
                         </div>
                         <div class="disActions">
                           <ul>
-                            <li class="disActionsReply" @click="AuthorReply(v.author)"><div class="reply">回复</div></li>
+                            <li class="disActionsReply" @click="AuthorReply(v.author,userId)"><div class="reply">回复</div></li>
                             <li class="disActionsMore">
                             <el-popover
                               placement="right"
@@ -48,7 +48,7 @@
 
                   <div class="replyItems" v-for="(item,index) in replyItem" :key="index">
                   <div class="disContent">
-                    <router-link :to="'/user/'+replyUserId"><img :src="item.avatar" class="perAvatar" alt=""></router-link>
+                    <router-link :to="'/user/'+item.id"><img :src="item.avatar" class="perAvatar" alt=""></router-link>
                     <div class="disHeader">
                       <ul>
                         <li class="disUser">
@@ -58,11 +58,11 @@
                       </ul>
                     </div>
                     <div class="disBody">
-                      <p>{{ item.reply_content }}</p>
+                      <p> <span class="replyWith"><i class="el-icon-refresh"></i>{{ item.name }}</span> {{ item.reply_content }}</p>
                     </div>
                     <div class="disActions">
                       <ul>
-                        <li class="disActionsReply" @click="AuthorReply(item.name)"><div class="reply">回复</div></li>
+                        <li class="disActionsReply" @click="AuthorReply(item.name,item.id)"><div class="reply">回复</div></li>
                         <li class="disActionsMore">
                           <el-popover
                             placement="right"
@@ -142,11 +142,13 @@
 </template>
 
 <script>
-  import {getTopicByIdInfo,getReplyByTopicId} from "../js/api";
+  import {getTopicByIdInfo,getReplyByTopicId,addReply} from "../js/api";
   import {mapState,mapMutations} from 'vuex'
 
   export default {
         name: "Topic",
+        // 注入reload, AppVue中注册
+        inject: ['reload'],
         data(){
           return{
             topic:false,
@@ -175,7 +177,7 @@
           id : this.$route.params.id
         }
         getTopicByIdInfo(para).then((res)=>{
-            console.log(res.data)
+            // console.log(res.data)
           this.articleId = res.data.id
           this.categoryName  = res.data.get_category_by_article_id.category_name
           this.title   = res.data.title
@@ -190,27 +192,45 @@
         getReplyByTopicId(para).then((res)=>{
           // console.log(res.data)
           for(let i=0;i<res.data.length;i++){
-            this.replyUserId = res.data[i].get_user_by_reply_user_id.id
             this.replyItem.push({
               created_at:res.data[i].created_at,
               reply_content:res.data[i].reply_content,
               name:res.data[i].get_user_by_reply_user_id.name,
-              avatar:'http://localhost:9090' + res.data[i].get_user_by_reply_user_id.avatar
+              id:res.data[i].get_user_by_reply_user_id.id,
+              avatar:'http://localhost:9090' + res.data[i].get_user_by_reply_user_id.avatar,
             })
           }
         })
       },
       methods:{
-        AuthorReply(author) {
+        AuthorReply(author,userId) {
           this.dialogFormVisible = true
           this.sendrelyname = author
+          this.sendReplyId = userId
         },
         sendReply(){
           let para = {
-
+            topicId : this.$route.params.id,
+            replyContent : this.desc,
+            replyWithId : this.sendReplyId
           }
           addReply(para).then((res)=>{
-
+            // console.log(res.data)
+            if(res.data.code == 200){
+              this.$notify({
+                title: '提示',
+                message: res.data.msg,
+                type: 'success'
+              });
+              this.dialogFormVisible = false
+              // 刷新当前页面
+              this.reload();
+            }else{
+              this.$notify.error({
+                title: '提示',
+                message: res.data.msg
+              });
+            }
           })
         }
       }
@@ -405,5 +425,14 @@
   }
   .formname{
     display: contents;
+  }
+  .replyWith{
+    background-color: #e8ecf3;
+    color: #4078c0;
+    border-radius: 5px;
+    margin-right: 10px;
+    padding-left: 6px;
+    padding-top: 3px;
+    padding-bottom: 3px;
   }
 </style>

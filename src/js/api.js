@@ -2,7 +2,20 @@ import  axios from 'axios'
 
 let api_url  = 'http://localhost:9090'
 axios.defaults.baseURL = api_url
-axios.defaults.headers.common.Authorization = localStorage.getItem('jwt_token')
+
+axios.interceptors.request.use(
+  config => {
+
+    if (config.method === "post") {
+      config.headers['Authorization'] = localStorage.getItem('jwt_token')
+    }
+    return config
+  },
+  error => {
+    return Promise.reject(error)
+  }
+)
+
 //获取分类
 export function getCategory(para) {
   return axios({
@@ -108,5 +121,14 @@ export  function getReplyByTopicId(para) {
     method:'get',
     url:'/getReplyByTopicId',
     params:para
+  })
+}
+
+//添加话题回复
+export function addReply(para) {
+  return axios({
+    method:'post',
+    url:'/addReply',
+    data:para
   })
 }

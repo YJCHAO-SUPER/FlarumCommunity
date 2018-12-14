@@ -39,16 +39,19 @@
         // console.log(123)
       },
       mounted:function () {
-        getArticleInfo({}).then((res)=>{
-          // console.log(res.data)
+        let para = {
+
+        }
+        getArticleInfo(para).then((res)=>{
+          console.log(res.data)
           for (let i=0;i<res.data.length;i++){
             this.showIndex.push({
                    id:res.data[i].id,
-                   avatar:'http://localhost:9090' + res.data[i].get_user_by_article_id.avatar,
-                   userId : res.data[i].get_user_by_article_id.id,
+                   avatar: res.data[i].get_user_by_article_id !=null ? 'http://localhost:9090' + res.data[i].get_user_by_article_id.avatar  : '',
+                   userId : res.data[i].get_user_by_article_id !=null ? res.data[i].get_user_by_article_id.id : '',
                   title:res.data[i].title,
-                  categoryName:res.data[i].get_category_by_article_id.category_name,
-                  name: res.data[i].get_user_by_article_id.name,
+                  categoryName: res.data[i].get_user_by_article_id !=null ? res.data[i].get_category_by_article_id.category_name : '',
+                  name: res.data[i].get_user_by_article_id !=null ? res.data[i].get_user_by_article_id.name : '',
             })
           }
         })

@@ -129,7 +129,7 @@
         }
       },
       created:function(){
-          console.log(this.user)
+          // console.log(this.user)
 
           let para = {
               userId : this.$route.params.id

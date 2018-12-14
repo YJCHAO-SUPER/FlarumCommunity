@@ -86,6 +86,7 @@
           sendLoginInfo(para).then((res)=>{
             if(res.data.code == 200){
               localStorage.setItem('jwt_token',res.data.ACCESS_TOKEN)
+              // console.log(localStorage.getItem("jwt_token"))
               this.$store.commit('setLogin', true)
               this.$emit('login',false)
               this.SET_USER({'id' : res.data.id,'avatar' : 'http://localhost:9090' + res.data.avatar,'name' : res.data.name})

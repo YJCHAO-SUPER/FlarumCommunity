@@ -31,12 +31,11 @@
                             <li class="disActionsMore">
                             <el-popover
                               placement="right"
-                              width="180"
+                              width="150"
                               trigger="click">
                               <el-row>
                                 <el-button type="primary" icon="el-icon-edit" circle></el-button>
                                 <el-button type="danger" icon="el-icon-delete" circle></el-button>
-                                <el-button type="info" icon="el-icon-message" circle></el-button>
                               </el-row>
                               <i class="el-icon-more"  slot="reference"></i>
                             </el-popover>
@@ -170,7 +169,7 @@
         computed:{
           ...mapState(['user'])
         },
-      created:function(){
+       created:function(){
           this.myselfAvatar = this.user.avatar
         // alert(this.$route.params.id)
         let para = {
@@ -198,11 +197,12 @@
               name:res.data[i].get_user_by_reply_user_id.name,
               id:res.data[i].get_user_by_reply_user_id.id,
               avatar:'http://localhost:9090' + res.data[i].get_user_by_reply_user_id.avatar,
+              count:res.data.length
             })
           }
         })
-      },
-      methods:{
+       },
+       methods:{
         AuthorReply(author,userId) {
           this.dialogFormVisible = true
           this.sendrelyname = author
@@ -233,7 +233,7 @@
             }
           })
         }
-      }
+       }
     }
 </script>
 

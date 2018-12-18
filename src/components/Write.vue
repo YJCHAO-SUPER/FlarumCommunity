@@ -32,18 +32,40 @@
 
 <script>
   import {getCategory} from "@/js/api";
-  import {sendTopicInfo} from "../js/api";
+  import {sendTopicInfo,getTopicById} from "../js/api";
+
+  //将delta对象转为html
+  function quillGetHTML (inputDelta) {
+    let tempCont = document.createElement ("div");
+    (new Quill (tempCont)).setContents (inputDelta);
+    return tempCont.getElementsByClassName ("ql-editor")[0].innerHTML;
+  }
 
   export default {
       name: "write",
-      props:["topic"],
+      props:["topic","topicId"],
     data(){
         return {
           dynamicTags: [],
           options: [],
           category: null,
           title: '',
-          content: ''
+          content: '',
+          quill: null,
+          sendTopicId:this.topicId
+        }
+      },
+      created:function(){
+        if(this.sendTopicId){
+          let para={
+            id : this.sendTopicId
+          }
+          getTopicById(para).then((res) => {
+            console.log(res.data)
+            this.title = res.data.title
+            this.category = res.data.get_category_by_article_id.category_name
+            document.getElementsByClassName ("ql-editor")[0].innerHTML = res.data.content
+          })
         }
       },
       methods:{

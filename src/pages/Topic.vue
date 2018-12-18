@@ -1,16 +1,18 @@
 <template>
     <div class="person">
+      <Write  :topic="topic" @topicBox="showTopicBox" :topicId="topicId"></Write>
         <Main class="perContent">
             <div class="theme">
               <div class="container">
                   <ul class="perItems">
-                    <li class="itemCategory"><a href="#">{{ categoryName }}</a></li>
+                    <li class="itemCategory">{{ categoryName }}</li>
                     <li class="itemTitle"><h2>{{ title }}</h2></li>
                   </ul>
               </div>
             </div>
             <div class="container">
               <div class="discussion">
+                <!--话题-->
                   <div class="disItems" v-for="(v,k) in discussionItem">
                       <div class="disContent">
                         <router-link :to="'/user/'+userId"><img :src="v.avatar" class="perAvatar" alt=""></router-link>
@@ -34,7 +36,7 @@
                               width="150"
                               trigger="click">
                               <el-row>
-                                <el-button type="primary" icon="el-icon-edit" circle></el-button>
+                                <el-button type="primary" icon="el-icon-edit" circle @click="showEditTopic()"></el-button>
                                 <el-button type="danger" icon="el-icon-delete" circle></el-button>
                               </el-row>
                               <i class="el-icon-more"  slot="reference"></i>
@@ -44,7 +46,7 @@
                         </div>
                       </div>
                   </div>
-
+                <!--话题回复-->
                   <div class="replyItems" v-for="(item,index) in replyItem" :key="index">
                   <div class="disContent">
                     <router-link :to="'/user/'+item.id"><img :src="item.avatar" class="perAvatar" alt=""></router-link>
@@ -65,12 +67,11 @@
                         <li class="disActionsMore">
                           <el-popover
                             placement="right"
-                            width="180"
+                            width="150"
                             trigger="click">
                             <el-row>
-                              <el-button type="primary" icon="el-icon-edit" circle></el-button>
-                              <el-button type="danger" icon="el-icon-delete" circle></el-button>
-                              <el-button type="info" icon="el-icon-message" circle></el-button>
+                              <el-button type="primary" icon="el-icon-edit" circle @click="EditAuthorReply(item.name,item.id,item.replyId)"></el-button>
+                              <el-button type="danger" icon="el-icon-delete" circle @click="deleteReply(item.replyId)"></el-button>
                             </el-row>
                             <i class="el-icon-more"  slot="reference"></i>
                           </el-popover>
@@ -136,13 +137,32 @@
               <el-button type="primary" @click="sendReply">发表回复</el-button>
             </div>
           </el-dialog>
+
+          <!--编辑回复框-->
+          <el-dialog title="编辑" :visible.sync="dialogFormVisibleEdit">
+            <el-form>
+              <p class="formTitle">{{ title }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;回复给：
+                <span class="formname" v-model="editUserId">{{ editAuthor }}</span>
+              </p>
+              <img class="formimg" :src="myselfAvatar" alt="">
+              <el-form-item :label-width="formLabelWidth">
+                <el-input type="textarea" v-model="descEdit"></el-input>
+              </el-form-item>
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+              <el-button @click="dialogFormVisibleEdit = false">取 消</el-button>
+              <el-button type="primary" @click="sendEditReply">编辑回复</el-button>
+            </div>
+          </el-dialog>
+
         </Main>
     </div>
 </template>
 
 <script>
-  import {getTopicByIdInfo,getReplyByTopicId,addReply} from "../js/api";
+  import {getTopicByIdInfo,getReplyByTopicId,addReply,getShowEditReply,editReply,deleteReplyById} from "../js/api";
   import {mapState,mapMutations} from 'vuex'
+  import Write from '@/components/Write'
 
   export default {
         name: "Topic",
@@ -163,18 +183,25 @@
             replyUserId:'',
             sendrelyname:'',
             articleId:'',
-            sendReplyId:''
+            sendReplyId:'',
+            dialogFormVisibleEdit:false,
+            descEdit: '',
+            replyId:'',
+            editAuthor:'',
+            editUserId:'',
+            topicId:''
           }
         },
         computed:{
           ...mapState(['user'])
         },
        created:function(){
-          this.myselfAvatar = this.user.avatar
-        // alert(this.$route.params.id)
+       this.myselfAvatar = this.user.avatar
+         this.topicId = this.$route.params.id
         let para = {
           id : this.$route.params.id
         }
+        //加载文章
         getTopicByIdInfo(para).then((res)=>{
             // console.log(res.data)
           this.articleId = res.data.id
@@ -188,10 +215,12 @@
             author:res.data.get_user_by_article_id.name
           })
         })
+        // 加载回复
         getReplyByTopicId(para).then((res)=>{
           // console.log(res.data)
           for(let i=0;i<res.data.length;i++){
             this.replyItem.push({
+              replyId:res.data[i].id,
               created_at:res.data[i].created_at,
               reply_content:res.data[i].reply_content,
               name:res.data[i].get_user_by_reply_user_id.name,
@@ -203,16 +232,37 @@
         })
        },
        methods:{
+         showTopicBox(value){
+           this.topic = value
+         },
+        //  点击显示回复框
         AuthorReply(author,userId) {
           this.dialogFormVisible = true
           this.sendrelyname = author
           this.sendReplyId = userId
         },
+        // 点击显示编辑回复框
+        EditAuthorReply(editAuthor,editUserId,replyId){
+          this.dialogFormVisibleEdit = true
+          this.replyId = replyId
+          this.editAuthor = editAuthor
+          this.editUserId = editUserId
+
+          let para = {
+            editReplyId : this.replyId
+          }
+          //显示编辑内容
+          getShowEditReply(para).then((res) => {
+            // console.log(res.data)
+            this.descEdit  = res.data.reply_content
+          })
+        },
+        // 发表回复
         sendReply(){
           let para = {
             topicId : this.$route.params.id,
             replyContent : this.desc,
-            replyWithId : this.sendReplyId
+            replyWithId : this.sendReplyId,
           }
           addReply(para).then((res)=>{
             // console.log(res.data)
@@ -232,8 +282,64 @@
               });
             }
           })
-        }
-       }
+        },
+        //编辑回复
+         sendEditReply(){
+           let para = {
+             topicId : this.$route.params.id,
+             replyEditContent : this.descEdit,
+             replyWithId : this.editUserId,
+             replyId : this.replyId
+           }
+           editReply(para).then((res)=>{
+             // console.log(res.data)
+             if(res.data.code == 200){
+               this.$notify({
+                 title: '提示',
+                 message: res.data.msg,
+                 type: 'success'
+               });
+               this.dialogFormVisible = false
+               // 刷新当前页面
+               this.reload();
+             }else{
+               this.$notify.error({
+                 title: '提示',
+                 message: res.data.msg
+               });
+             }
+           })
+         },
+       //  删除回复
+         deleteReply(replyId){
+           let para = {
+            replyId : replyId
+           }
+          deleteReplyById(para).then((res) =>{
+            if(res.data.code == 200){
+              this.$notify({
+                title: '提示',
+                message: res.data.msg,
+                type: 'success'
+              });
+              // 刷新当前页面
+              this.reload();
+            }else{
+              this.$notify.error({
+                title: '提示',
+                message: '删除回复失败~'
+              });
+            }
+           })
+         },
+       //  点击显示编辑话题
+         showEditTopic(){
+           this.topic = true
+         },
+       },
+      components: {
+        Write
+      }
     }
 </script>
 

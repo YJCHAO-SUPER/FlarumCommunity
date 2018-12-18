@@ -132,3 +132,39 @@ export function addReply(para) {
     data:para
   })
 }
+
+//根据回复id获取回复内容
+export function getShowEditReply(para) {
+  return axios({
+    method:'get',
+    url:'/getShowEditReply',
+    params:para
+  })
+}
+
+//编辑回复
+export function editReply(para) {
+  return axios({
+    method:'post',
+    url:'/editReply',
+    data:para
+  })
+}
+
+//删除回复
+export function deleteReplyById(para) {
+  return axios({
+    method:'get',
+    url:'/deleteReplyById',
+    params:para
+  })
+}
+
+//根据文章id找到文章
+export function getTopicById(para) {
+  return axios({
+    method:'get',
+    url:'/getTopicById',
+    params:para
+  })
+}

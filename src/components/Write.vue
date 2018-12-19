@@ -43,8 +43,10 @@
 
   export default {
       name: "write",
+      // 注入reload, AppVue中注册
+      inject: ['reload'],
       props:["topic","topicId"],
-    data(){
+      data(){
         return {
           dynamicTags: [],
           options: [],
@@ -61,9 +63,9 @@
             id : this.sendTopicId
           }
           getTopicById(para).then((res) => {
-            console.log(res.data)
+            // console.log(res.data)
             this.title = res.data.title
-            this.category = res.data.get_category_by_article_id.category_name
+            this.category = res.data.get_category_by_article_id.id
             document.getElementsByClassName ("ql-editor")[0].innerHTML = res.data.content
           })
         }
@@ -78,10 +80,15 @@
               title: this.title,
               topicContent: this.content
           }
+          if(this.sendTopicId) {
+            para.editTopicId = this.sendTopicId
+          }
           sendTopicInfo(para).then((res)=>{
               if(res.data.state == true){
                 alert(res.data.msg)
                 this.$router.push("/topic/"+res.data.topicId)
+                // 刷新当前页面
+                this.reload();
               }else{
                 alert(res.data.msg)
               }

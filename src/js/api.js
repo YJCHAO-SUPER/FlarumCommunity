@@ -168,3 +168,12 @@ export function getTopicById(para) {
     params:para
   })
 }
+
+// 删除话题
+export function delTopic(para) {
+  return axios({
+    method:'get',
+    url:'/delTopic',
+    params:para
+  })
+}

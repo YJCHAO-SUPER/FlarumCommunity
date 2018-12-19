@@ -5,7 +5,7 @@
             <div class="theme">
               <div class="container">
                   <ul class="perItems">
-                    <li class="itemCategory">{{ categoryName }}</li>
+                    <li class="itemCategory"><a>{{ categoryName }}</a></li>
                     <li class="itemTitle"><h2>{{ title }}</h2></li>
                   </ul>
               </div>
@@ -37,7 +37,7 @@
                               trigger="click">
                               <el-row>
                                 <el-button type="primary" icon="el-icon-edit" circle @click="showEditTopic()"></el-button>
-                                <el-button type="danger" icon="el-icon-delete" circle></el-button>
+                                <el-button type="danger" icon="el-icon-delete" circle @click="deleteTopic()"></el-button>
                               </el-row>
                               <i class="el-icon-more"  slot="reference"></i>
                             </el-popover>
@@ -160,7 +160,7 @@
 </template>
 
 <script>
-  import {getTopicByIdInfo,getReplyByTopicId,addReply,getShowEditReply,editReply,deleteReplyById} from "../js/api";
+  import {getTopicByIdInfo,getReplyByTopicId,addReply,getShowEditReply,editReply,deleteReplyById,delTopic} from "../js/api";
   import {mapState,mapMutations} from 'vuex'
   import Write from '@/components/Write'
 
@@ -336,6 +336,27 @@
          showEditTopic(){
            this.topic = true
          },
+       //  删除话题
+         deleteTopic(){
+           let para = {
+             topicId : this.$route.params.id
+           }
+           delTopic(para).then((res) => {
+             if(res.data.code == 200){
+               this.$notify({
+                 title: '提示',
+                 message: res.data.msg,
+                 type: 'success'
+               });
+               this.$router.push({path:'/'})
+             }else{
+               this.$notify.error({
+                 title: '提示',
+                 message: '删除话题失败~'
+               });
+             }
+           })
+         }
        },
       components: {
         Write

@@ -43,7 +43,7 @@
 
         }
         getArticleInfo(para).then((res)=>{
-          console.log(res.data)
+          // console.log(res.data)
           for (let i=0;i<res.data.length;i++){
             this.showIndex.push({
                    id:res.data[i].id,
